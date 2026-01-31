@@ -10,6 +10,8 @@ const copyPlaylistBtn = document.getElementById("copyPlaylist");
 
 const canvas = document.getElementById("canvas");
 
+let imagesLoaded = new Array(9).fill(false);
+
 /* ---------- Helpers ---------- */
 
 function getYouTubeID(url) {
@@ -29,9 +31,10 @@ previewBtn.addEventListener("click", () => {
   progressBar.classList.remove("hidden");
   progressBar.value = 0;
   downloadBtn.disabled = true;
+  imagesLoaded.fill(false);
 
   let validIds = [];
-  let loaded = 0;
+  let loadedCount = 0;
 
   inputs.forEach((input, i) => {
     const id = getYouTubeID(input.value.trim());
@@ -44,23 +47,63 @@ previewBtn.addEventListener("click", () => {
     validIds.push(id);
     images[i].src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 
-    images[i].onload = images[i].onerror = () => {
-      loaded++;
-      progressBar.value = (loaded / 9) * 100;
+    images[i].onload = () => {
+      imagesLoaded[i] = true;
+      loadedCount++;
+      progressBar.value = (loadedCount / 9) * 100;
 
-      if (loaded === 9) {
+      if (loadedCount === 9) {
         progressBar.classList.add("hidden");
         downloadBtn.disabled = false;
       }
     };
+
+    images[i].onerror = () => {
+      imagesLoaded[i] = false;
+    };
   });
 
-  // Playlist (only when all 9 URLs valid)
+  // Playlist
   if (validIds.length === 9) {
     playlistUrlInput.value = generatePlaylistUrl(validIds);
     playlistBox.classList.remove("hidden");
   } else {
     playlistBox.classList.add("hidden");
+  }
+});
+
+/* ---------- Download (SYNC & SAFE) ---------- */
+
+downloadBtn.addEventListener("click", () => {
+  if (!imagesLoaded.every(Boolean)) {
+    alert("Images are still loading. Please wait.");
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+  const size = 150;
+
+  canvas.width = size * 3;
+  canvas.height = size * 3;
+
+  images.forEach((img, i) => {
+    const x = (i % 3) * size;
+    const y = Math.floor(i / 3) * size;
+    ctx.drawImage(img, x, y, size, size);
+  });
+
+  const dataURL = canvas.toDataURL("image/png");
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    window.open(dataURL, "_blank");
+  } else {
+    const a = document.createElement("a");
+    a.href = dataURL;
+    a.download = "youtube-collage.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 });
 
