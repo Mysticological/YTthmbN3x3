@@ -3,11 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>YouTube Thumbnail 3x3 Image Generator</title>
+
+  <!-- Mobile viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <h1>YouTube Thumbnail 3x3 Image Generator</h1>
+
+<!-- Mobile hint -->
+<p id="mobileHint" class="hidden hint">
+  After the image opens, long-press it and choose <strong>Save Image</strong>.
+</p>
 
 <!-- 3x3 collage grid -->
 <div id="collage">
@@ -45,7 +54,7 @@
 <!-- Hidden canvas -->
 <canvas id="canvas" hidden></canvas>
 
-<!-- Download blocked dialog -->
+<!-- Download blocked dialog (desktop only) -->
 <div id="downloadError" class="hidden dialog">
   <div class="dialog-box">
     <h3>Download blocked</h3>
