@@ -1,5 +1,9 @@
+// =====================
+// DOM ELEMENTS
+// =====================
 const inputs = document.querySelectorAll("#inputs input");
 const images = document.querySelectorAll(".cell img");
+
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
@@ -10,113 +14,163 @@ const copyPlaylistBtn = document.getElementById("copyPlaylist");
 
 const canvas = document.getElementById("canvas");
 
-let imagesLoaded = new Array(9).fill(false);
+// Track image load status
+let imagesLoaded = Array(9).fill(false);
 
-/* ---------- Helpers ---------- */
-
+// =====================
+// YOUTUBE ID HELPER
+// =====================
 function getYouTubeID(url) {
-  const match = url.match(
-    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/
-  );
-  return match ? match[1] : null;
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+    if (u.hostname.includes("youtube.com")) return u.searchParams.get("v");
+  } catch {
+    return null;
+  }
+  return null;
 }
 
-function generatePlaylistUrl(ids) {
-  return `https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}`;
+// =====================
+// PROMISE IMAGE LOADER
+// =====================
+function loadImageWithPromise(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 }
 
-/* ---------- Preview ---------- */
+// =====================
+// PLAYLIST GENERATOR
+// =====================
+function generatePlaylistURL() {
+  const ids = Array.from(inputs)
+    .map(input => getYouTubeID(input.value.trim()))
+    .filter(Boolean);
 
-previewBtn.addEventListener("click", () => {
-  progressBar.classList.remove("hidden");
-  progressBar.value = 0;
-  downloadBtn.disabled = true;
-  imagesLoaded.fill(false);
+  if (ids.length !== 9) {
+    playlistBox.classList.add("hidden");
+    playlistUrlInput.value = "";
+    return;
+  }
 
-  let validIds = [];
-  let loadedCount = 0;
+  const url = `https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}`;
+  playlistUrlInput.value = url;
+  playlistBox.classList.remove("hidden");
+}
+
+// Copy playlist URL
+copyPlaylistBtn.addEventListener("click", () => {
+  playlistUrlInput.select();
+  document.execCommand("copy");
+  copyPlaylistBtn.textContent = "Copied!";
+  setTimeout(() => (copyPlaylistBtn.textContent = "Copy"), 1500);
+});
+
+// =====================
+// PREVIEW HANDLER
+// =====================
+function updatePreview() {
+  imagesLoaded = Array(9).fill(false);
+  let allValid = true;
 
   inputs.forEach((input, i) => {
-    const id = getYouTubeID(input.value.trim());
+    const videoId = getYouTubeID(input.value.trim());
 
-    if (!id) {
+    if (!videoId) {
       images[i].src = "";
+      allValid = false;
       return;
     }
 
-    validIds.push(id);
-    images[i].src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    const src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    images[i].src = src;
 
     images[i].onload = () => {
       imagesLoaded[i] = true;
-      loadedCount++;
-      progressBar.value = (loadedCount / 9) * 100;
-
-      if (loadedCount === 9) {
-        progressBar.classList.add("hidden");
-        downloadBtn.disabled = false;
-      }
+      checkReadyState();
     };
 
     images[i].onerror = () => {
       imagesLoaded[i] = false;
+      checkReadyState();
     };
   });
 
-  // Playlist
-  if (validIds.length === 9) {
-    playlistUrlInput.value = generatePlaylistUrl(validIds);
-    playlistBox.classList.remove("hidden");
-  } else {
-    playlistBox.classList.add("hidden");
+  downloadBtn.disabled = !allValid;
+  progressBar.classList.add("hidden");
+
+  generatePlaylistURL();
+}
+
+// Enable download only when all images loaded
+function checkReadyState() {
+  if (imagesLoaded.every(Boolean)) {
+    downloadBtn.disabled = false;
   }
-});
+}
 
-/* ---------- Download (SYNC & SAFE) ---------- */
+previewBtn.addEventListener("click", updatePreview);
 
-downloadBtn.addEventListener("click", () => {
+// =====================
+// DOWNLOAD HANDLER (PROMISE-BASED)
+// =====================
+downloadBtn.addEventListener("click", async () => {
   if (!imagesLoaded.every(Boolean)) {
     alert("Images are still loading. Please wait.");
     return;
   }
 
-  const ctx = canvas.getContext("2d");
   const size = 150;
+  const ctx = canvas.getContext("2d");
 
   canvas.width = size * 3;
   canvas.height = size * 3;
 
-  images.forEach((img, i) => {
-    const x = (i % 3) * size;
-    const y = Math.floor(i / 3) * size;
-    ctx.drawImage(img, x, y, size, size);
-  });
+  progressBar.classList.remove("hidden");
+  progressBar.value = 0;
 
-  const dataURL = canvas.toDataURL("image/png");
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  try {
+    const promisedImages = await Promise.all(
+      Array.from(images).map(img => loadImageWithPromise(img.src))
+    );
 
-  if (isMobile) {
-    window.open(dataURL, "_blank");
-  } else {
-    const a = document.createElement("a");
-    a.href = dataURL;
-    a.download = "youtube-collage.png";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    promisedImages.forEach((img, i) => {
+      const x = (i % 3) * size;
+      const y = Math.floor(i / 3) * size;
+      ctx.drawImage(img, x, y, size, size);
+      progressBar.value = ((i + 1) / 9) * 100;
+    });
+
+    const dataURL = canvas.toDataURL("image/png");
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      window.open(dataURL, "_blank");
+    } else {
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "youtube-collage.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to generate image. Please try again.");
   }
+
+  progressBar.classList.add("hidden");
 });
 
-/* ---------- Copy Playlist ---------- */
-
-copyPlaylistBtn.addEventListener("click", () => {
-  playlistUrlInput.select();
-  navigator.clipboard.writeText(playlistUrlInput.value);
-  alert("Playlist copied!");
-});
-
-/* ---------- Drag & Drop ---------- */
-
+// =====================
+// DRAG & DROP (DESKTOP)
+// =====================
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {
@@ -133,14 +187,27 @@ document.querySelectorAll(".cell").forEach((cell, index) => {
 
   cell.addEventListener("drop", () => {
     if (draggedIndex === null || draggedIndex === index) return;
-    swap(images, draggedIndex, index, "src");
-    swap(inputs, draggedIndex, index, "value");
+    swapImages(draggedIndex, index);
+    swapInputs(draggedIndex, index);
+    swapLoaded(draggedIndex, index);
     draggedIndex = null;
   });
 });
 
-function swap(arr, a, b, prop) {
-  const temp = arr[a][prop];
-  arr[a][prop] = arr[b][prop];
-  arr[b][prop] = temp;
+function swapImages(a, b) {
+  const temp = images[a].src;
+  images[a].src = images[b].src;
+  images[b].src = temp;
+}
+
+function swapInputs(a, b) {
+  const temp = inputs[a].value;
+  inputs[a].value = inputs[b].value;
+  inputs[b].value = temp;
+}
+
+function swapLoaded(a, b) {
+  const temp = imagesLoaded[a];
+  imagesLoaded[a] = imagesLoaded[b];
+  imagesLoaded[b] = temp;
 }
