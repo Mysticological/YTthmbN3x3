@@ -17,28 +17,39 @@ function getYouTubeID(url) {
   return null;
 }
 
-// Load thumbnails on Preview click
+// Preview thumbnails
 function updatePreview() {
-  let allFilled = true;
+  let validCount = 0;
 
   inputs.forEach((input, i) => {
     const videoId = getYouTubeID(input.value.trim());
+
     if (!videoId) {
       images[i].src = "";
-      allFilled = false;
       return;
     }
+
+    images[i].crossOrigin = "anonymous";
     images[i].src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+    images[i].onload = () => {
+      validCount++;
+      if (validCount === images.length) {
+        downloadBtn.disabled = false;
+      }
+    };
+
+    images[i].onerror = () => {
+      downloadBtn.disabled = true;
+    };
   });
 
-  downloadBtn.disabled = !allFilled;
+  downloadBtn.disabled = true;
 }
 
-if (previewBtn) {
-  previewBtn.addEventListener("click", updatePreview);
-}
+previewBtn.addEventListener("click", updatePreview);
 
-// Download collage
+// Download collage (FIXED for Firefox)
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -50,50 +61,31 @@ downloadBtn.addEventListener("click", () => {
   progressBar.classList.remove("hidden");
   progressBar.value = 0;
 
-  let loadedCount = 0;
-  const total = images.length;
+  let progress = 0;
 
-  // Ensure all images are loaded
-  const loadPromises = Array.from(images).map(img => {
-    return new Promise(resolve => {
-      if (img.complete && img.naturalWidth !== 0) {
-        loadedCount++;
-        progressBar.value = (loadedCount / total) * 100;
-        resolve();
-      } else {
-        img.onload = () => {
-          loadedCount++;
-          progressBar.value = (loadedCount / total) * 100;
-          resolve();
-        };
-        img.onerror = () => {
-          loadedCount++;
-          progressBar.value = (loadedCount / total) * 100;
-          resolve();
-        };
-      }
-    });
+  images.forEach((img, index) => {
+    if (!img.complete || img.naturalWidth === 0) return;
+
+    const x = (index % 3) * size;
+    const y = Math.floor(index / 3) * size;
+
+    ctx.drawImage(img, x, y, size, size);
+
+    progress += 100 / images.length;
+    progressBar.value = progress;
   });
 
-  Promise.all(loadPromises).then(() => {
-    // Draw 3x3 collage
-    images.forEach((img, index) => {
-      const x = (index % 3) * size;
-      const y = Math.floor(index / 3) * size;
-      ctx.drawImage(img, x, y, size, size);
-    });
-
-    // Trigger download
+  setTimeout(() => {
     const link = document.createElement("a");
-    link.download = "youtube-collage.png"; // PNG
+    link.download = "youtube-collage.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
 
     progressBar.classList.add("hidden");
-  });
+  }, 300);
 });
 
-// Drag & reorder thumbnails
+// Drag & drop reordering
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {
@@ -117,13 +109,13 @@ document.querySelectorAll(".cell").forEach((cell, index) => {
 });
 
 function swapImages(a, b) {
-  const tempSrc = images[a].src;
+  const temp = images[a].src;
   images[a].src = images[b].src;
-  images[b].src = tempSrc;
+  images[b].src = temp;
 }
 
 function swapInputs(a, b) {
-  const tempVal = inputs[a].value;
+  const temp = inputs[a].value;
   inputs[a].value = inputs[b].value;
-  inputs[b].value = tempVal;
+  inputs[b].value = temp;
 }
