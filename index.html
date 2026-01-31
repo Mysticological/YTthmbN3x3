@@ -3,14 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>YouTube Thumbnail 3x3 Image Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
+<p class="hint">
+  On mobile, use Preview to generate the final image view. You can screenshot it
+  or use Download when supported.
+</p>
+
+<!-- Builder grid -->
 <div id="collage">
-  <!-- 9 image boxes -->
   <div class="cell"><img /></div>
   <div class="cell"><img /></div>
   <div class="cell"><img /></div>
@@ -23,7 +29,6 @@
 </div>
 
 <div id="inputs">
-  <!-- 9 URL inputs -->
   <input placeholder="YouTube URL 1" />
   <input placeholder="YouTube URL 2" />
   <input placeholder="YouTube URL 3" />
@@ -37,6 +42,16 @@
 
 <button id="previewBtn">Preview</button>
 <button id="downloadBtn" disabled>Download Image</button>
+
+<!-- Merged preview (CSS-based, mobile-safe) -->
+<div id="mergedPreview" class="hidden">
+  <h3>Your Final Preview</h3>
+  <div class="mergedGrid">
+    <img /><img /><img />
+    <img /><img /><img />
+    <img /><img /><img />
+  </div>
+</div>
 
 <canvas id="canvas" hidden></canvas>
 
