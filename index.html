@@ -45,6 +45,21 @@
 <!-- Hidden canvas -->
 <canvas id="canvas" hidden></canvas>
 
+<!-- Download blocked dialog -->
+<div id="downloadError" class="hidden dialog">
+  <div class="dialog-box">
+    <h3>Download blocked</h3>
+    <p>
+      Your browser or an extension (such as an ad blocker or popup blocker)
+      prevented the image from downloading.
+    </p>
+    <p>
+      Please temporarily disable the blocker for this site and try again.
+    </p>
+    <button id="closeDialog">OK</button>
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
