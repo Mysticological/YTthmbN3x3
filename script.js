@@ -3,14 +3,12 @@ const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
-const canvas = document.getElementById("canvas");
 
 const playlistBox = document.getElementById("playlistBox");
 const playlistUrlInput = document.getElementById("playlistUrl");
 const copyPlaylistBtn = document.getElementById("copyPlaylist");
 
-let finalBlob = null;
-let finalDataURL = null;
+const canvas = document.getElementById("canvas");
 
 /* ---------- Utilities ---------- */
 
@@ -32,29 +30,34 @@ function generatePlaylistUrl() {
 
 /* ---------- Preview ---------- */
 
-previewBtn.addEventListener("click", async () => {
+previewBtn.addEventListener("click", () => {
   progressBar.classList.remove("hidden");
   progressBar.value = 0;
   downloadBtn.disabled = true;
-  finalBlob = null;
-  finalDataURL = null;
 
-  const ids = [];
-  let loadCount = 0;
+  let loaded = 0;
+  let validCount = 0;
 
   inputs.forEach((input, i) => {
     const id = getYouTubeID(input.value.trim());
-    if (!id) return;
-    ids.push(id);
+    if (!id) {
+      images[i].src = "";
+      return;
+    }
 
+    validCount++;
     images[i].src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
     images[i].onload = images[i].onerror = () => {
-      loadCount++;
-      progressBar.value = (loadCount / 9) * 100;
+      loaded++;
+      progressBar.value = (loaded / 9) * 100;
+      if (loaded === validCount) {
+        progressBar.classList.add("hidden");
+        if (validCount === 9) downloadBtn.disabled = false;
+      }
     };
   });
 
-  // Playlist ALWAYS handled
+  // Playlist URL
   const playlist = generatePlaylistUrl();
   if (playlist) {
     playlistUrlInput.value = playlist;
@@ -62,21 +65,14 @@ previewBtn.addEventListener("click", async () => {
   } else {
     playlistBox.classList.add("hidden");
   }
+});
 
-  // Wait for images
-  await Promise.all(
-    Array.from(images).map(
-      img =>
-        new Promise(resolve => {
-          if (img.complete && img.naturalWidth) resolve();
-          else img.onload = img.onerror = resolve;
-        })
-    )
-  );
+/* ---------- Download (SYNC & RELIABLE) ---------- */
 
-  // Build canvas
+downloadBtn.addEventListener("click", () => {
   const ctx = canvas.getContext("2d");
   const size = 150;
+
   canvas.width = size * 3;
   canvas.height = size * 3;
 
@@ -86,36 +82,22 @@ previewBtn.addEventListener("click", async () => {
     ctx.drawImage(img, x, y, size, size);
   });
 
-  finalDataURL = canvas.toDataURL("image/png");
-  canvas.toBlob(blob => {
-    finalBlob = blob;
-    downloadBtn.disabled = false;
-    progressBar.classList.add("hidden");
-  });
-});
-
-/* ---------- Download ---------- */
-
-downloadBtn.addEventListener("click", () => {
-  if (!finalDataURL) return;
-
+  const dataURL = canvas.toDataURL("image/png");
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   if (isMobile) {
-    window.open(finalDataURL, "_blank");
-  } else if (finalBlob) {
-    const url = URL.createObjectURL(finalBlob);
+    window.open(dataURL, "_blank");
+  } else {
     const a = document.createElement("a");
-    a.href = url;
+    a.href = dataURL;
     a.download = "youtube-top9.png";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   }
 });
 
-/* ---------- Playlist Copy ---------- */
+/* ---------- Copy Playlist ---------- */
 
 copyPlaylistBtn.addEventListener("click", () => {
   playlistUrlInput.select();
