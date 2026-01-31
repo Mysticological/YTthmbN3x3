@@ -6,6 +6,15 @@ const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
 const downloadError = document.getElementById("downloadError");
 const closeDialog = document.getElementById("closeDialog");
+const mobileHint = document.getElementById("mobileHint");
+
+// Mobile detection
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// Show mobile hint if needed
+if (isMobile) {
+  mobileHint.classList.remove("hidden");
+}
 
 // Helper: Extract YouTube video ID
 function getYouTubeID(url) {
@@ -55,7 +64,7 @@ closeDialog.addEventListener("click", () => {
   downloadError.classList.add("hidden");
 });
 
-// Download collage with adblock detection
+// Download logic
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -72,13 +81,21 @@ downloadBtn.addEventListener("click", () => {
 
     const x = (index % 3) * size;
     const y = Math.floor(index / 3) * size;
-
     ctx.drawImage(img, x, y, size, size);
+
     progressBar.value += 100 / images.length;
   });
 
   const dataUrl = canvas.toDataURL("image/png");
+  progressBar.classList.add("hidden");
 
+  // 📱 MOBILE: open in new tab
+  if (isMobile) {
+    window.open(dataUrl, "_blank");
+    return;
+  }
+
+  // 🖥 DESKTOP: try download
   const link = document.createElement("a");
   link.href = dataUrl;
   link.download = "youtube-collage.png";
@@ -88,15 +105,13 @@ downloadBtn.addEventListener("click", () => {
   link.click();
   document.body.removeChild(link);
 
+  // Adblock / popup detection (desktop)
   setTimeout(() => {
-    progressBar.classList.add("hidden");
-
-    // If download was blocked, show dialog
     downloadError.classList.remove("hidden");
   }, 500);
 });
 
-// Drag & drop reordering
+// Drag & drop (desktop-focused)
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {
