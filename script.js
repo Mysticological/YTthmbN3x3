@@ -3,15 +3,10 @@ const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
-const mobileHint = document.getElementById("mobileHint");
 
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const output = document.getElementById("output");
+const finalImage = document.getElementById("finalImage");
 
-if (isMobile) {
-  mobileHint.classList.remove("hidden");
-}
-
-// Extract YouTube ID
 function getYouTubeID(url) {
   try {
     const u = new URL(url);
@@ -23,41 +18,35 @@ function getYouTubeID(url) {
   return null;
 }
 
-// Preview thumbnails
-previewBtn.addEventListener("click", () => {
+// Preview thumbnails + generate combined image
+previewBtn.addEventListener("click", async () => {
   let loaded = 0;
   downloadBtn.disabled = true;
+  output.classList.add("hidden");
 
-  inputs.forEach((input, i) => {
-    const id = getYouTubeID(input.value.trim());
-
+  images.forEach((img, i) => {
+    const id = getYouTubeID(inputs[i].value.trim());
     if (!id) {
-      images[i].src = "";
+      img.src = "";
       return;
     }
 
-    images[i].crossOrigin = "anonymous";
-    images[i].src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-
-    images[i].onload = () => {
+    img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    img.onload = () => {
       loaded++;
       if (loaded === images.length) {
+        generateCombinedImage();
         downloadBtn.disabled = false;
       }
-    };
-
-    images[i].onerror = () => {
-      downloadBtn.disabled = true;
     };
   });
 });
 
-// Download image
-downloadBtn.addEventListener("click", () => {
+function generateCombinedImage() {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
-  const size = 150;
+  const size = 300;
   canvas.width = size * 3;
   canvas.height = size * 3;
 
@@ -65,64 +54,23 @@ downloadBtn.addEventListener("click", () => {
   progressBar.value = 0;
 
   images.forEach((img, index) => {
-    if (!img.complete || img.naturalWidth === 0) return;
-
     const x = (index % 3) * size;
     const y = Math.floor(index / 3) * size;
     ctx.drawImage(img, x, y, size, size);
-
     progressBar.value += 100 / images.length;
   });
 
-  const dataUrl = canvas.toDataURL("image/png");
+  const dataURL = canvas.toDataURL("image/png");
+  finalImage.src = dataURL;
+  output.classList.remove("hidden");
+
   progressBar.classList.add("hidden");
+}
 
-  // Mobile: open image
-  if (isMobile) {
-    window.open(dataUrl, "_blank");
-    return;
-  }
-
-  // Desktop: download
+// Desktop download only
+downloadBtn.addEventListener("click", () => {
   const link = document.createElement("a");
-  link.href = dataUrl;
+  link.href = finalImage.src;
   link.download = "youtube-collage.png";
-  document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
 });
-
-// Drag & drop (desktop)
-let draggedIndex = null;
-
-document.querySelectorAll(".cell").forEach((cell, index) => {
-  cell.addEventListener("dragstart", () => {
-    draggedIndex = index;
-    cell.classList.add("dragging");
-  });
-
-  cell.addEventListener("dragend", () => {
-    cell.classList.remove("dragging");
-  });
-
-  cell.addEventListener("dragover", e => e.preventDefault());
-
-  cell.addEventListener("drop", () => {
-    if (draggedIndex === null || draggedIndex === index) return;
-    swapImages(draggedIndex, index);
-    swapInputs(draggedIndex, index);
-    draggedIndex = null;
-  });
-});
-
-function swapImages(a, b) {
-  const temp = images[a].src;
-  images[a].src = images[b].src;
-  images[b].src = temp;
-}
-
-function swapInputs(a, b) {
-  const temp = inputs[a].value;
-  inputs[a].value = inputs[b].value;
-  inputs[b].value = temp;
-}

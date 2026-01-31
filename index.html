@@ -3,34 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <title>YouTube Thumbnail 3x3 Image Generator</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
-<p id="mobileHint" class="hidden hint">
-  On mobile, the image will open in a new tab. Long-press and choose
-  <strong>Save Image</strong>.
+<p class="hint">
+  On mobile, long-press the generated image below to save it.
 </p>
 
-<!-- Collage -->
+<!-- Preview grid -->
 <div id="collage">
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
-  <div class="cell" draggable="true"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
 </div>
 
-<!-- Inputs -->
 <div id="inputs">
   <input placeholder="YouTube URL 1" />
   <input placeholder="YouTube URL 2" />
@@ -46,14 +42,13 @@
 <button id="previewBtn">Preview</button>
 <button id="downloadBtn" disabled>Download Image</button>
 
-<!-- Disclaimer -->
-<p class="disclaimer">
-  If the image does not download, your browser or an extension (such as an ad
-  blocker or popup blocker) may be preventing it.  
-  Try disabling extensions or using another browser.
-</p>
-
 <progress id="progressBar" value="0" max="100" class="hidden"></progress>
+
+<!-- Generated image output -->
+<div id="output" class="hidden">
+  <h3>Your Combined Image</h3>
+  <img id="finalImage" alt="YouTube collage" />
+</div>
 
 <canvas id="canvas" hidden></canvas>
 
