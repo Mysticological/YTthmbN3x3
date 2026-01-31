@@ -8,15 +8,13 @@ const playlistBox = document.getElementById("playlistBox");
 const playlistUrlInput = document.getElementById("playlistUrl");
 const copyPlaylistBtn = document.getElementById("copyPlaylist");
 
+/* ✅ Robust YouTube ID extractor */
 function getYouTubeID(url) {
-  try {
-    const u = new URL(url);
-    if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
-    if (u.hostname.includes("youtube.com")) return u.searchParams.get("v");
-  } catch {
-    return null;
-  }
-  return null;
+  if (!url) return null;
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/
+  );
+  return match ? match[1] : null;
 }
 
 function generatePlaylistUrl() {
@@ -54,6 +52,7 @@ function updatePreview() {
 
 previewBtn.addEventListener("click", updatePreview);
 
+/* Download logic */
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -109,13 +108,14 @@ downloadBtn.addEventListener("click", () => {
   });
 });
 
+/* Copy playlist */
 copyPlaylistBtn.addEventListener("click", () => {
   playlistUrlInput.select();
   navigator.clipboard.writeText(playlistUrlInput.value);
   alert("Playlist link copied!");
 });
 
-// Drag & drop
+/* Drag & drop */
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {
