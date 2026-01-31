@@ -50,7 +50,6 @@ button {
   color: #555;
 }
 
-/* Progress bar */
 .hidden {
   display: none;
 }
@@ -61,12 +60,12 @@ button {
   margin: 10px auto;
 }
 
-progress::-webkit-progress-bar {
-  background-color: #eee;
-  border-radius: 10px;
+#playlistBox {
+  max-width: 450px;
+  margin: 30px auto;
 }
 
-progress::-webkit-progress-value {
-  background-color: #4caf50;
-  border-radius: 10px;
+#playlistUrl {
+  width: 100%;
+  padding: 8px;
 }
