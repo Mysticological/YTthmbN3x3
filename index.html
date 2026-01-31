@@ -10,20 +10,18 @@
 <h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
 <div id="collage">
-  <!-- 9 image boxes -->
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
-  <div class="cell"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
 </div>
 
 <div id="inputs">
-  <!-- 9 URL inputs -->
   <input placeholder="YouTube URL 1" />
   <input placeholder="YouTube URL 2" />
   <input placeholder="YouTube URL 3" />
@@ -37,6 +35,8 @@
 
 <button id="previewBtn">Preview</button>
 <button id="downloadBtn" disabled>Download Image</button>
+
+<progress id="progressBar" value="0" max="100" style="width: 450px; display: none;"></progress>
 
 <canvas id="canvas" hidden></canvas>
 
