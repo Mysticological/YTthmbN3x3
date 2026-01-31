@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YouTube Top 9 Generator</title>
+  <title>YouTube Thumbnail 3x3 Image Generator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<h1>YouTube Top 9 Generator</h1>
+<h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
+<!-- 3x3 collage grid -->
 <div id="collage">
   <div class="cell" draggable="true"><img /></div>
   <div class="cell" draggable="true"><img /></div>
@@ -22,6 +23,7 @@
   <div class="cell" draggable="true"><img /></div>
 </div>
 
+<!-- Input URLs -->
 <div id="inputs">
   <input placeholder="YouTube URL 1" />
   <input placeholder="YouTube URL 2" />
@@ -34,15 +36,19 @@
   <input placeholder="YouTube URL 9" />
 </div>
 
-<button id="previewBtn">Preview</button>
-<button id="downloadBtn" disabled>Download Image</button>
+<!-- Controls -->
+<div id="controls">
+  <button id="previewBtn">Preview</button>
+  <button id="downloadBtn" disabled>Download Image</button>
 
-<progress id="progressBar" value="0" max="100" class="hidden"></progress>
+  <progress id="progressBar" value="0" max="100" class="hidden"></progress>
+</div>
 
 <p class="disclaimer">
-  If download does not start, your browser or extensions (e.g. ad blockers) may block it.
+  If the image does not download, it may be due to browser settings or ad-blocking extensions.
 </p>
 
+<!-- Playlist -->
 <div id="playlistBox" class="hidden">
   <h3>YouTube Playlist URL</h3>
   <input id="playlistUrl" readonly />
