@@ -7,6 +7,8 @@ const progressBar = document.getElementById("progressBar");
 const output = document.getElementById("output");
 const finalImage = document.getElementById("finalImage");
 
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 function getYouTubeID(url) {
   try {
     const u = new URL(url);
@@ -18,8 +20,8 @@ function getYouTubeID(url) {
   return null;
 }
 
-// Preview thumbnails + generate combined image
-previewBtn.addEventListener("click", async () => {
+// Preview = generate final image
+previewBtn.addEventListener("click", () => {
   let loaded = 0;
   downloadBtn.disabled = true;
   output.classList.add("hidden");
@@ -35,14 +37,14 @@ previewBtn.addEventListener("click", async () => {
     img.onload = () => {
       loaded++;
       if (loaded === images.length) {
-        generateCombinedImage();
+        generateFinalImage();
         downloadBtn.disabled = false;
       }
     };
   });
 });
 
-function generateCombinedImage() {
+function generateFinalImage() {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
@@ -60,15 +62,20 @@ function generateCombinedImage() {
     progressBar.value += 100 / images.length;
   });
 
-  const dataURL = canvas.toDataURL("image/png");
-  finalImage.src = dataURL;
+  finalImage.src = canvas.toDataURL("image/png");
   output.classList.remove("hidden");
-
   progressBar.classList.add("hidden");
 }
 
-// Desktop download only
+// Download button works on ALL devices
 downloadBtn.addEventListener("click", () => {
+  if (isMobile) {
+    // Mobile: open image for long-press save
+    window.open(finalImage.src, "_blank");
+    return;
+  }
+
+  // Desktop: direct download
   const link = document.createElement("a");
   link.href = finalImage.src;
   link.download = "youtube-collage.png";
