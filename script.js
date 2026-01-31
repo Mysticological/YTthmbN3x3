@@ -1,22 +1,17 @@
-// DOM Elements
 const inputs = document.querySelectorAll("#inputs input");
 const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
-const downloadError = document.getElementById("downloadError");
-const closeDialog = document.getElementById("closeDialog");
 const mobileHint = document.getElementById("mobileHint");
 
-// Mobile detection
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-// Show mobile hint if needed
 if (isMobile) {
   mobileHint.classList.remove("hidden");
 }
 
-// Helper: Extract YouTube video ID
+// Extract YouTube ID
 function getYouTubeID(url) {
   try {
     const u = new URL(url);
@@ -29,20 +24,20 @@ function getYouTubeID(url) {
 }
 
 // Preview thumbnails
-function updatePreview() {
+previewBtn.addEventListener("click", () => {
   let loaded = 0;
   downloadBtn.disabled = true;
 
   inputs.forEach((input, i) => {
-    const videoId = getYouTubeID(input.value.trim());
+    const id = getYouTubeID(input.value.trim());
 
-    if (!videoId) {
+    if (!id) {
       images[i].src = "";
       return;
     }
 
     images[i].crossOrigin = "anonymous";
-    images[i].src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    images[i].src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 
     images[i].onload = () => {
       loaded++;
@@ -55,16 +50,9 @@ function updatePreview() {
       downloadBtn.disabled = true;
     };
   });
-}
-
-previewBtn.addEventListener("click", updatePreview);
-
-// Close dialog
-closeDialog.addEventListener("click", () => {
-  downloadError.classList.add("hidden");
 });
 
-// Download logic
+// Download image
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -89,29 +77,22 @@ downloadBtn.addEventListener("click", () => {
   const dataUrl = canvas.toDataURL("image/png");
   progressBar.classList.add("hidden");
 
-  // 📱 MOBILE: open in new tab
+  // Mobile: open image
   if (isMobile) {
     window.open(dataUrl, "_blank");
     return;
   }
 
-  // 🖥 DESKTOP: try download
+  // Desktop: download
   const link = document.createElement("a");
   link.href = dataUrl;
   link.download = "youtube-collage.png";
-  link.style.display = "none";
-
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-
-  // Adblock / popup detection (desktop)
-  setTimeout(() => {
-    downloadError.classList.remove("hidden");
-  }, 500);
 });
 
-// Drag & drop (desktop-focused)
+// Drag & drop (desktop)
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {

@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>YouTube Thumbnail 3x3 Image Generator</title>
 
-  <!-- Mobile viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="style.css" />
@@ -13,12 +12,12 @@
 
 <h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
-<!-- Mobile hint -->
 <p id="mobileHint" class="hidden hint">
-  After the image opens, long-press it and choose <strong>Save Image</strong>.
+  On mobile, the image will open in a new tab. Long-press and choose
+  <strong>Save Image</strong>.
 </p>
 
-<!-- 3x3 collage grid -->
+<!-- Collage -->
 <div id="collage">
   <div class="cell" draggable="true"><img /></div>
   <div class="cell" draggable="true"><img /></div>
@@ -31,7 +30,7 @@
   <div class="cell" draggable="true"><img /></div>
 </div>
 
-<!-- Input URLs -->
+<!-- Inputs -->
 <div id="inputs">
   <input placeholder="YouTube URL 1" />
   <input placeholder="YouTube URL 2" />
@@ -44,30 +43,19 @@
   <input placeholder="YouTube URL 9" />
 </div>
 
-<!-- Buttons -->
 <button id="previewBtn">Preview</button>
 <button id="downloadBtn" disabled>Download Image</button>
 
-<!-- Progress bar -->
+<!-- Disclaimer -->
+<p class="disclaimer">
+  If the image does not download, your browser or an extension (such as an ad
+  blocker or popup blocker) may be preventing it.  
+  Try disabling extensions or using another browser.
+</p>
+
 <progress id="progressBar" value="0" max="100" class="hidden"></progress>
 
-<!-- Hidden canvas -->
 <canvas id="canvas" hidden></canvas>
-
-<!-- Download blocked dialog (desktop only) -->
-<div id="downloadError" class="hidden dialog">
-  <div class="dialog-box">
-    <h3>Download blocked</h3>
-    <p>
-      Your browser or an extension (such as an ad blocker or popup blocker)
-      prevented the image from downloading.
-    </p>
-    <p>
-      Please temporarily disable the blocker for this site and try again.
-    </p>
-    <button id="closeDialog">OK</button>
-  </div>
-</div>
 
 <script src="script.js"></script>
 </body>
