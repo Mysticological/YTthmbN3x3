@@ -4,31 +4,29 @@ body {
   text-align: center;
 }
 
-h1 {
-  font-size: 1.4rem;
-}
-
-#collage,
-.mergedGrid {
+#collage {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  width: 100%;
-  max-width: 450px;
+  gap: 5px;
+  width: 450px;
   margin: 20px auto;
 }
 
 .cell {
+  width: 150px;
+  height: 150px;
   background: #eee;
-  aspect-ratio: 1 / 1;
+  cursor: grab;
 }
 
-.cell img,
-.mergedGrid img {
+.cell.dragging {
+  opacity: 0.4;
+}
+
+.cell img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 #inputs {
@@ -39,26 +37,40 @@ h1 {
 #inputs input {
   width: 100%;
   margin: 4px 0;
-  padding: 8px;
+  padding: 6px;
 }
 
-button {
-  padding: 10px 16px;
-  margin: 6px;
-  font-size: 1rem;
+#controls {
+  margin-top: 15px;
+}
+
+#controls button {
+  margin: 5px;
+  padding: 8px 14px;
+}
+
+#progressBar {
+  display: block;
+  width: 450px;
+  height: 18px;
+  margin: 10px auto 0;
 }
 
 .hidden {
   display: none;
 }
 
-.hint {
+#playlistBox {
   max-width: 450px;
-  margin: 10px auto;
-  font-size: 0.85rem;
-  color: #555;
+  margin: 30px auto;
 }
 
-#mergedPreview {
-  margin-top: 30px;
+#playlistUrl {
+  width: 100%;
+  padding: 8px;
+}
+
+.disclaimer {
+  font-size: 0.8rem;
+  color: #555;
 }
