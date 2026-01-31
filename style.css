@@ -4,28 +4,6 @@ body {
   text-align: center;
 }
 
-#inputs {
-  max-width: 450px;
-  margin: auto;
-}
-
-#inputs input {
-  width: 100%;
-  margin: 4px 0;
-  padding: 6px;
-}
-
-button {
-  margin: 10px 5px;
-  padding: 8px 14px;
-  cursor: pointer;
-}
-
-.disclaimer {
-  font-size: 0.8rem;
-  color: #555;
-}
-
 #collage {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -51,6 +29,27 @@ button {
   object-fit: cover;
 }
 
+#inputs {
+  max-width: 450px;
+  margin: auto;
+}
+
+#inputs input {
+  width: 100%;
+  margin: 4px 0;
+  padding: 6px;
+}
+
+button {
+  margin: 10px 5px;
+  padding: 8px 14px;
+}
+
+.disclaimer {
+  font-size: 0.8rem;
+  color: #555;
+}
+
 /* Progress bar */
 .hidden {
   display: none;
@@ -70,16 +69,4 @@ progress::-webkit-progress-bar {
 progress::-webkit-progress-value {
   background-color: #4caf50;
   border-radius: 10px;
-}
-
-/* Playlist */
-#playlistBox {
-  max-width: 450px;
-  margin: 30px auto;
-}
-
-#playlistUrl {
-  width: 100%;
-  padding: 8px;
-  font-size: 0.9rem;
 }
