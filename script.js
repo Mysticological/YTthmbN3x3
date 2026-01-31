@@ -3,13 +3,17 @@ const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
+const canvas = document.getElementById("canvas");
 
 const playlistBox = document.getElementById("playlistBox");
 const playlistUrlInput = document.getElementById("playlistUrl");
 const copyPlaylistBtn = document.getElementById("copyPlaylist");
 
+let finalImageBlob = null;
+
+/* ------------------ Utilities ------------------ */
+
 function getYouTubeID(url) {
-  if (!url) return null;
   const match = url.match(
     /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/
   );
@@ -21,102 +25,115 @@ function generatePlaylistUrl() {
     .map(i => getYouTubeID(i.value.trim()))
     .filter(Boolean);
 
-  if (ids.length < 2) return null;
-  return `https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}`;
+  return ids.length >= 2
+    ? `https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}`
+    : null;
 }
 
-function updatePreview() {
-  let allValid = true;
+/* ------------------ Preview ------------------ */
+
+previewBtn.addEventListener("click", async () => {
+  progressBar.classList.remove("hidden");
+  progressBar.value = 0;
+  finalImageBlob = null;
+  downloadBtn.disabled = true;
+
+  let valid = true;
+  const loadPromises = [];
 
   inputs.forEach((input, i) => {
     const id = getYouTubeID(input.value.trim());
     if (!id) {
       images[i].src = "";
-      allValid = false;
+      valid = false;
       return;
     }
+
     images[i].src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+
+    loadPromises.push(
+      new Promise(resolve => {
+        images[i].onload = images[i].onerror = () => resolve();
+      })
+    );
   });
 
-  downloadBtn.disabled = !allValid;
-
-  const playlistUrl = generatePlaylistUrl();
-  if (playlistUrl) {
-    playlistUrlInput.value = playlistUrl;
-    playlistBox.classList.remove("hidden");
-  } else {
-    playlistBox.classList.add("hidden");
+  if (!valid) {
+    progressBar.classList.add("hidden");
+    return;
   }
-}
 
-previewBtn.addEventListener("click", updatePreview);
+  let loaded = 0;
+  loadPromises.forEach(p =>
+    p.then(() => {
+      loaded++;
+      progressBar.value = (loaded / 9) * 100;
+    })
+  );
 
-/* ✅ Desktop-safe download */
-downloadBtn.addEventListener("click", () => {
-  const canvas = document.getElementById("canvas");
+  await Promise.all(loadPromises);
+
+  /* Build canvas ON PREVIEW */
   const ctx = canvas.getContext("2d");
   const size = 150;
 
   canvas.width = size * 3;
   canvas.height = size * 3;
 
-  progressBar.classList.remove("hidden");
-  progressBar.value = 0;
-
-  let loaded = 0;
-  const total = images.length;
-
-  const promises = Array.from(images).map(img => {
-    return new Promise(resolve => {
-      if (img.complete && img.naturalWidth !== 0) {
-        loaded++;
-        progressBar.value = (loaded / total) * 100;
-        resolve();
-      } else {
-        img.onload = img.onerror = () => {
-          loaded++;
-          progressBar.value = (loaded / total) * 100;
-          resolve();
-        };
-      }
-    });
+  images.forEach((img, i) => {
+    const x = (i % 3) * size;
+    const y = Math.floor(i / 3) * size;
+    ctx.drawImage(img, x, y, size, size);
   });
 
-  Promise.all(promises).then(() => {
-    images.forEach((img, i) => {
-      const x = (i % 3) * size;
-      const y = Math.floor(i / 3) * size;
-      ctx.drawImage(img, x, y, size, size);
-    });
-
-    canvas.toBlob(blob => {
-      const url = URL.createObjectURL(blob);
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-      if (isMobile) {
-        window.open(url, "_blank");
-      } else {
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "youtube-collage.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      URL.revokeObjectURL(url);
-      progressBar.classList.add("hidden");
-    });
+  canvas.toBlob(blob => {
+    finalImageBlob = blob;
+    downloadBtn.disabled = false;
+    progressBar.classList.add("hidden");
   });
+
+  /* Playlist */
+  const playlist = generatePlaylistUrl();
+  if (playlist) {
+    playlistUrlInput.value = playlist;
+    playlistBox.classList.remove("hidden");
+  } else {
+    playlistBox.classList.add("hidden");
+  }
 });
+
+/* ------------------ Download ------------------ */
+
+downloadBtn.addEventListener("click", () => {
+  if (!finalImageBlob) return;
+
+  const url = URL.createObjectURL(finalImageBlob);
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    window.open(url, "_blank");
+  } else {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "youtube-collage.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  URL.revokeObjectURL(url);
+});
+
+/* ------------------ Playlist Copy ------------------ */
 
 copyPlaylistBtn.addEventListener("click", () => {
   playlistUrlInput.select();
   navigator.clipboard.writeText(playlistUrlInput.value);
-  alert("Playlist link copied!");
+  alert("Playlist copied!");
 });
 
-/* Drag & drop */
+/* ------------------ Drag & Drop ------------------ */
+
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {
