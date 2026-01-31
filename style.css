@@ -40,19 +40,24 @@ body {
   padding: 6px;
 }
 
-button {
-  margin: 10px 5px;
+#controls {
+  margin-top: 15px;
+}
+
+#controls button {
+  margin: 5px;
   padding: 8px 14px;
+}
+
+#progressBar {
+  display: block;
+  width: 450px;
+  height: 18px;
+  margin: 10px auto 0;
 }
 
 .hidden {
   display: none;
-}
-
-#progressBar {
-  width: 450px;
-  height: 18px;
-  margin: 10px auto;
 }
 
 #playlistBox {
