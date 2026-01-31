@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube 3x3 Collage Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<h1>YouTube 3×3 Thumbnail Collage</h1>
+
+<div id="collage">
+  <!-- 9 image boxes -->
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+  <div class="cell"><img /></div>
+</div>
+
+<div id="inputs">
+  <!-- 9 URL inputs -->
+  <input placeholder="YouTube URL 1" />
+  <input placeholder="YouTube URL 2" />
+  <input placeholder="YouTube URL 3" />
+  <input placeholder="YouTube URL 4" />
+  <input placeholder="YouTube URL 5" />
+  <input placeholder="YouTube URL 6" />
+  <input placeholder="YouTube URL 7" />
+  <input placeholder="YouTube URL 8" />
+  <input placeholder="YouTube URL 9" />
+</div>
+
+<button id="previewBtn">Preview</button>
+<button id="downloadBtn" disabled>Download Image</button>
+
+<canvas id="canvas" hidden></canvas>
+
+<script src="script.js"></script>
+</body>
+</html>
