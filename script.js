@@ -47,13 +47,13 @@ downloadBtn.addEventListener("click", () => {
   canvas.width = size * 3;
   canvas.height = size * 3;
 
-  progressBar.style.display = "block";
+  progressBar.classList.remove("hidden");
   progressBar.value = 0;
 
   let loadedCount = 0;
   const total = images.length;
 
-  // Wait for all images
+  // Ensure all images are loaded
   const loadPromises = Array.from(images).map(img => {
     return new Promise(resolve => {
       if (img.complete && img.naturalWidth !== 0) {
@@ -76,22 +76,24 @@ downloadBtn.addEventListener("click", () => {
   });
 
   Promise.all(loadPromises).then(() => {
+    // Draw 3x3 collage
     images.forEach((img, index) => {
       const x = (index % 3) * size;
       const y = Math.floor(index / 3) * size;
       ctx.drawImage(img, x, y, size, size);
     });
 
+    // Trigger download
     const link = document.createElement("a");
-    link.download = "youtube-collage.png";
+    link.download = "youtube-collage.png"; // PNG
     link.href = canvas.toDataURL("image/png");
     link.click();
 
-    progressBar.style.display = "none";
+    progressBar.classList.add("hidden");
   });
 });
 
-// Optional: Drag & reorder thumbnails
+// Drag & reorder thumbnails
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {

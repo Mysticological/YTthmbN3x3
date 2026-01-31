@@ -9,6 +9,7 @@
 
 <h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
+<!-- 3x3 collage grid -->
 <div id="collage">
   <div class="cell" draggable="true"><img /></div>
   <div class="cell" draggable="true"><img /></div>
@@ -21,6 +22,7 @@
   <div class="cell" draggable="true"><img /></div>
 </div>
 
+<!-- Input URLs -->
 <div id="inputs">
   <input placeholder="YouTube URL 1" />
   <input placeholder="YouTube URL 2" />
@@ -33,11 +35,14 @@
   <input placeholder="YouTube URL 9" />
 </div>
 
+<!-- Buttons -->
 <button id="previewBtn">Preview</button>
 <button id="downloadBtn" disabled>Download Image</button>
 
-<progress id="progressBar" value="0" max="100" style="width: 450px; display: none;"></progress>
+<!-- Progress bar -->
+<progress id="progressBar" value="0" max="100" class="hidden"></progress>
 
+<!-- Hidden canvas for generating image -->
 <canvas id="canvas" hidden></canvas>
 
 <script src="script.js"></script>
