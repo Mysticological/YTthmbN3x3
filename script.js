@@ -33,22 +33,28 @@ const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 
-previewBtn.addEventListener("click", () => {
+function updatePreview() {
   let allFilled = true;
 
   inputs.forEach((input, i) => {
     const videoId = getYouTubeID(input.value.trim());
+
     if (!videoId) {
+      images[i].src = "";
       allFilled = false;
       return;
     }
 
-    const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    images[i].src = thumbUrl;
+    images[i].src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   });
 
   downloadBtn.disabled = !allFilled;
+}
+
+inputs.forEach(input => {
+  input.addEventListener("input", updatePreview);
 });
+
 
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
