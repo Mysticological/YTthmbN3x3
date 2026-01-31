@@ -8,7 +8,6 @@ const playlistBox = document.getElementById("playlistBox");
 const playlistUrlInput = document.getElementById("playlistUrl");
 const copyPlaylistBtn = document.getElementById("copyPlaylist");
 
-/* ✅ Robust YouTube ID extractor */
 function getYouTubeID(url) {
   if (!url) return null;
   const match = url.match(
@@ -52,7 +51,7 @@ function updatePreview() {
 
 previewBtn.addEventListener("click", updatePreview);
 
-/* Download logic */
+/* ✅ Desktop-safe download */
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -90,25 +89,27 @@ downloadBtn.addEventListener("click", () => {
       ctx.drawImage(img, x, y, size, size);
     });
 
-    const dataUrl = canvas.toDataURL("image/png");
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    if (isMobile) {
-      window.open(dataUrl, "_blank");
-    } else {
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = "youtube-collage.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+      if (isMobile) {
+        window.open(url, "_blank");
+      } else {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "youtube-collage.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
 
-    progressBar.classList.add("hidden");
+      URL.revokeObjectURL(url);
+      progressBar.classList.add("hidden");
+    });
   });
 });
 
-/* Copy playlist */
 copyPlaylistBtn.addEventListener("click", () => {
   playlistUrlInput.select();
   navigator.clipboard.writeText(playlistUrlInput.value);
