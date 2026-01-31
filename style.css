@@ -40,10 +40,15 @@ body {
   padding: 6px;
 }
 
-progress {
+/* Progress bar */
+.hidden {
+  display: none;
+}
+
+#progressBar {
+  width: 450px;
   height: 20px;
   margin: 10px 0;
-  appearance: none;
 }
 
 progress::-webkit-progress-bar {
