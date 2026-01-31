@@ -45,18 +45,13 @@ button {
   padding: 8px 14px;
 }
 
-.disclaimer {
-  font-size: 0.8rem;
-  color: #555;
-}
-
 .hidden {
   display: none;
 }
 
 #progressBar {
   width: 450px;
-  height: 20px;
+  height: 18px;
   margin: 10px auto;
 }
 
@@ -68,4 +63,9 @@ button {
 #playlistUrl {
   width: 100%;
   padding: 8px;
+}
+
+.disclaimer {
+  font-size: 0.8rem;
+  color: #555;
 }
