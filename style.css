@@ -4,6 +4,18 @@ body {
   text-align: center;
 }
 
+h1 {
+  font-size: 1.4rem;
+}
+
+/* Hint text for mobile */
+.hint {
+  max-width: 450px;
+  margin: 10px auto;
+  font-size: 0.9rem;
+  color: #555;
+}
+
 #collage {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -38,7 +50,14 @@ body {
 #inputs input {
   width: 100%;
   margin: 4px 0;
-  padding: 6px;
+  padding: 8px;
+  font-size: 0.95rem;
+}
+
+button {
+  padding: 10px 16px;
+  margin: 6px;
+  font-size: 1rem;
 }
 
 /* Progress bar */
@@ -83,10 +102,6 @@ progress::-webkit-progress-value {
   max-width: 400px;
   border-radius: 8px;
   text-align: center;
-}
-
-.dialog-box h3 {
-  margin-top: 0;
 }
 
 .dialog-box button {
