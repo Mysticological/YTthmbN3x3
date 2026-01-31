@@ -13,6 +13,21 @@ function getYouTubeID(url) {
   return null;
 }
 
+function updatePreview() {
+  let allFilled = true;
+
+  inputs.forEach((input, i) => {
+    const videoId = getYouTubeID(input.value.trim());
+
+    if (!videoId) {
+      images[i].src = "";
+      allFilled = false;
+      return;
+    }
+
+    images[i].src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  });
+
 const inputs = document.querySelectorAll("#inputs input");
 const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
