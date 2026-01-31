@@ -5,11 +5,7 @@ const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
 
-const playlistBox = document.getElementById("playlistBox");
-const playlistUrlInput = document.getElementById("playlistUrl");
-const copyPlaylistBtn = document.getElementById("copyPlaylist");
-
-// Helper: Extract YouTube ID
+// Helper: Extract YouTube video ID
 function getYouTubeID(url) {
   try {
     const u = new URL(url);
@@ -21,18 +17,9 @@ function getYouTubeID(url) {
   return null;
 }
 
-// Generate playlist URL
-function generatePlaylistUrl(urls) {
-  const ids = urls.map(getYouTubeID).filter(Boolean);
-  if (ids.length < 2) return null;
-  return `https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}`;
-}
-
-// Preview thumbnails + playlist
+// Preview thumbnails
 function updatePreview() {
   let allFilled = true;
-
-  const urls = Array.from(inputs).map(input => input.value.trim());
 
   inputs.forEach((input, i) => {
     const videoId = getYouTubeID(input.value.trim());
@@ -45,19 +32,11 @@ function updatePreview() {
   });
 
   downloadBtn.disabled = !allFilled;
-
-  const playlistUrl = generatePlaylistUrl(urls);
-  if (playlistUrl) {
-    playlistUrlInput.value = playlistUrl;
-    playlistBox.classList.remove("hidden");
-  } else {
-    playlistBox.classList.add("hidden");
-  }
 }
 
 previewBtn.addEventListener("click", updatePreview);
 
-// Download collage
+// Download collage (desktop + mobile-safe)
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -95,24 +74,25 @@ downloadBtn.addEventListener("click", () => {
       ctx.drawImage(img, x, y, size, size);
     });
 
-    const link = document.createElement("a");
-    link.download = "youtube-collage.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    const dataUrl = canvas.toDataURL("image/png");
+
+    // Mobile Safari fallback: open image in new tab
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      window.open(dataUrl, "_blank");
+    } else {
+      const link = document.createElement("a");
+      link.download = "youtube-collage.png";
+      link.href = dataUrl;
+      link.click();
+    }
 
     progressBar.classList.add("hidden");
   });
 });
 
-// Copy playlist
-copyPlaylistBtn.addEventListener("click", () => {
-  playlistUrlInput.select();
-  playlistUrlInput.setSelectionRange(0, 99999);
-  navigator.clipboard.writeText(playlistUrlInput.value);
-  alert("Playlist link copied!");
-});
-
-// Drag & drop
+// Drag & reorder thumbnails
 let draggedIndex = null;
 
 document.querySelectorAll(".cell").forEach((cell, index) => {

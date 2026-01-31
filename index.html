@@ -3,56 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YouTube Top 9 Collage</title>
+  <title>YouTube Thumbnail 3x3 Image Generator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>Top 9 YouTube Videos</h1>
+<h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
-  <div id="inputs">
-    <input placeholder="YouTube URL 1" />
-    <input placeholder="YouTube URL 2" />
-    <input placeholder="YouTube URL 3" />
-    <input placeholder="YouTube URL 4" />
-    <input placeholder="YouTube URL 5" />
-    <input placeholder="YouTube URL 6" />
-    <input placeholder="YouTube URL 7" />
-    <input placeholder="YouTube URL 8" />
-    <input placeholder="YouTube URL 9" />
-  </div>
+<!-- 3x3 collage grid -->
+<div id="collage">
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+  <div class="cell" draggable="true"><img /></div>
+</div>
 
-  <button id="previewBtn">Preview</button>
-  <button id="downloadBtn" disabled>Download Image</button>
+<!-- Input URLs -->
+<div id="inputs">
+  <input placeholder="YouTube URL 1" />
+  <input placeholder="YouTube URL 2" />
+  <input placeholder="YouTube URL 3" />
+  <input placeholder="YouTube URL 4" />
+  <input placeholder="YouTube URL 5" />
+  <input placeholder="YouTube URL 6" />
+  <input placeholder="YouTube URL 7" />
+  <input placeholder="YouTube URL 8" />
+  <input placeholder="YouTube URL 9" />
+</div>
 
-  <p class="disclaimer">
-    If the image does not download, it may be blocked by browser extensions (e.g. AdBlock).
-  </p>
+<!-- Buttons -->
+<button id="previewBtn">Preview</button>
+<button id="downloadBtn" disabled>Download Image</button>
 
-  <progress id="progressBar" class="hidden" max="100" value="0"></progress>
+<p class="disclaimer">
+  If the image does not download automatically, it may open in a new tab.  
+  On mobile, long-press the image and choose “Save Image”.
+</p>
 
-  <div id="collage">
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-    <div class="cell" draggable="true"><img /></div>
-  </div>
+<!-- Progress bar -->
+<progress id="progressBar" value="0" max="100" class="hidden"></progress>
 
-  <!-- Hidden canvas for image generation -->
-  <canvas id="canvas" style="display:none;"></canvas>
+<!-- Hidden canvas -->
+<canvas id="canvas" hidden></canvas>
 
-  <!-- Playlist Section -->
-  <div id="playlistBox" class="hidden">
-    <h3>YouTube Playlist Link</h3>
-    <input id="playlistUrl" readonly />
-    <button id="copyPlaylist">Copy</button>
-  </div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
