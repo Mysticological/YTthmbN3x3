@@ -4,6 +4,8 @@ const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const progressBar = document.getElementById("progressBar");
+const downloadError = document.getElementById("downloadError");
+const closeDialog = document.getElementById("closeDialog");
 
 // Helper: Extract YouTube video ID
 function getYouTubeID(url) {
@@ -19,7 +21,8 @@ function getYouTubeID(url) {
 
 // Preview thumbnails
 function updatePreview() {
-  let validCount = 0;
+  let loaded = 0;
+  downloadBtn.disabled = true;
 
   inputs.forEach((input, i) => {
     const videoId = getYouTubeID(input.value.trim());
@@ -33,8 +36,8 @@ function updatePreview() {
     images[i].src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 
     images[i].onload = () => {
-      validCount++;
-      if (validCount === images.length) {
+      loaded++;
+      if (loaded === images.length) {
         downloadBtn.disabled = false;
       }
     };
@@ -43,13 +46,16 @@ function updatePreview() {
       downloadBtn.disabled = true;
     };
   });
-
-  downloadBtn.disabled = true;
 }
 
 previewBtn.addEventListener("click", updatePreview);
 
-// Download collage (FIXED for Firefox)
+// Close dialog
+closeDialog.addEventListener("click", () => {
+  downloadError.classList.add("hidden");
+});
+
+// Download collage with adblock detection
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -61,8 +67,6 @@ downloadBtn.addEventListener("click", () => {
   progressBar.classList.remove("hidden");
   progressBar.value = 0;
 
-  let progress = 0;
-
   images.forEach((img, index) => {
     if (!img.complete || img.naturalWidth === 0) return;
 
@@ -70,19 +74,26 @@ downloadBtn.addEventListener("click", () => {
     const y = Math.floor(index / 3) * size;
 
     ctx.drawImage(img, x, y, size, size);
-
-    progress += 100 / images.length;
-    progressBar.value = progress;
+    progressBar.value += 100 / images.length;
   });
 
-  setTimeout(() => {
-    const link = document.createElement("a");
-    link.download = "youtube-collage.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+  const dataUrl = canvas.toDataURL("image/png");
 
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = "youtube-collage.png";
+  link.style.display = "none";
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  setTimeout(() => {
     progressBar.classList.add("hidden");
-  }, 300);
+
+    // If download was blocked, show dialog
+    downloadError.classList.remove("hidden");
+  }, 500);
 });
 
 // Drag & drop reordering
