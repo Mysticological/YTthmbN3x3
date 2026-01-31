@@ -34,6 +34,7 @@ previewBtn.addEventListener("click", () => {
 
   downloadBtn.disabled = !allFilled;
 });
+
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
