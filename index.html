@@ -11,8 +11,8 @@
 <h1>YouTube Thumbnail 3x3 Image Generator</h1>
 
 <p class="hint">
-  Preview generates the final image. On mobile, tap Download and long-press the
-  image to save.
+  On mobile, use Preview to generate the final image view. You can screenshot it
+  or use Download when supported.
 </p>
 
 <!-- Builder grid -->
@@ -43,12 +43,14 @@
 <button id="previewBtn">Preview</button>
 <button id="downloadBtn" disabled>Download Image</button>
 
-<progress id="progressBar" value="0" max="100" class="hidden"></progress>
-
-<!-- Final merged output -->
-<div id="output" class="hidden">
-  <h3>Final Image</h3>
-  <img id="finalImage" alt="YouTube collage" />
+<!-- Merged preview (CSS-based, mobile-safe) -->
+<div id="mergedPreview" class="hidden">
+  <h3>Your Final Preview</h3>
+  <div class="mergedGrid">
+    <img /><img /><img />
+    <img /><img /><img />
+    <img /><img /><img />
+  </div>
 </div>
 
 <canvas id="canvas" hidden></canvas>
