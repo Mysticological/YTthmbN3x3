@@ -13,49 +13,27 @@ function getYouTubeID(url) {
   return null;
 }
 
-function updatePreview() {
-  let allFilled = true;
-
-  inputs.forEach((input, i) => {
-    const videoId = getYouTubeID(input.value.trim());
-
-    if (!videoId) {
-      images[i].src = "";
-      allFilled = false;
-      return;
-    }
-
-    images[i].src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-  });
-
 const inputs = document.querySelectorAll("#inputs input");
 const images = document.querySelectorAll(".cell img");
 const previewBtn = document.getElementById("previewBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 
-function updatePreview() {
+previewBtn.addEventListener("click", () => {
   let allFilled = true;
 
   inputs.forEach((input, i) => {
     const videoId = getYouTubeID(input.value.trim());
-
     if (!videoId) {
-      images[i].src = "";
       allFilled = false;
       return;
     }
 
-    images[i].src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    images[i].src = thumbUrl;
   });
 
   downloadBtn.disabled = !allFilled;
-}
-
-inputs.forEach(input => {
-  input.addEventListener("input", updatePreview);
 });
-
-
 downloadBtn.addEventListener("click", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
