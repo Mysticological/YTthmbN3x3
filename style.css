@@ -4,33 +4,6 @@ body {
   text-align: center;
 }
 
-h1 {
-  font-size: 1.4rem;
-}
-
-#collage,
-.mergedGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  width: 100%;
-  max-width: 450px;
-  margin: 20px auto;
-}
-
-.cell {
-  background: #eee;
-  aspect-ratio: 1 / 1;
-}
-
-.cell img,
-.mergedGrid img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
 #inputs {
   max-width: 450px;
   margin: auto;
@@ -39,26 +12,74 @@ h1 {
 #inputs input {
   width: 100%;
   margin: 4px 0;
-  padding: 8px;
+  padding: 6px;
 }
 
 button {
-  padding: 10px 16px;
-  margin: 6px;
-  font-size: 1rem;
+  margin: 10px 5px;
+  padding: 8px 14px;
+  cursor: pointer;
 }
 
+.disclaimer {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+#collage {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 450px;
+  margin: 20px auto;
+}
+
+.cell {
+  width: 150px;
+  height: 150px;
+  background: #eee;
+  cursor: grab;
+}
+
+.cell.dragging {
+  opacity: 0.4;
+}
+
+.cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Progress bar */
 .hidden {
   display: none;
 }
 
-.hint {
-  max-width: 450px;
+#progressBar {
+  width: 450px;
+  height: 20px;
   margin: 10px auto;
-  font-size: 0.85rem;
-  color: #555;
 }
 
-#mergedPreview {
-  margin-top: 30px;
+progress::-webkit-progress-bar {
+  background-color: #eee;
+  border-radius: 10px;
+}
+
+progress::-webkit-progress-value {
+  background-color: #4caf50;
+  border-radius: 10px;
+}
+
+/* Playlist */
+#playlistBox {
+  max-width: 450px;
+  margin: 30px auto;
+}
+
+#playlistUrl {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.9rem;
 }
